@@ -26,7 +26,7 @@ The program writes to log.txt as well as the console.
 If M-NET communications is being simulated for testing,
  it reads ASCII hex from a text file called serial.dat
 
-The optional command-line parameter -Un causes packets that not
+The optional command-line parameter -Un causes M-NET packets that not
 to or from unit n to be ignored.
 
 --------------------------------------------------------------------------
@@ -48,6 +48,7 @@ to or from unit n to be ignored.
 Change log
 
 28 Mar 2015,  L. Shustek,  first version
+11 Apr 2015,  L. Shustek,  v1.1
 
 **************************************************************************/
 
@@ -55,18 +56,22 @@ Change log
 //       format decoder initialization structure look *really* ugly!
 
 
+#define VERSION "1.1"
 
-#define MNET 0   		// monitor M-NET communications? (else read from file)
-#define COOLMASTER 0	// monitor CoolMaster communications?
+#define MNET 1   		// monitor M-NET communications? (else read from file)
+#define COOLMASTER 1	// monitor CoolMaster communications?
 #define COOLMASTER_KB 0	// simulate CoolMaster using keyboard and loopback plug?
 
-#define coolmaster_com_port 1	// Coolmaster RS232 port COMn (usu. 4)
+#define coolmaster_com_port 4	// Coolmaster RS232 port COMn (usu. 4)
 #define mnet_com_port 5   		//    M-NET   RS232 port COMn (usu. 5)
 
-#define timeout 10  	// RS232 timeout in milliseconds
+#define timeout 10  	// M-NET RS232 timeout in milliseconds
 
 #define MAX_DATA 20		// maximum M-NET packet data
 #define COOLMASTER_ADDR 0xfb
+
+#define ACK 0x06	// ASCII acknowledge
+#define NAK 0x21	// ASCII negative acknowledge
 
 #include <windows.h>
 #include <stdio.h>
@@ -109,6 +114,7 @@ char dev_name[80];
 FILE *logfile, *testfile;
 struct _timeb start_time;  // long time; unsigned short millitm;
 bool did_newline = true;
+static char blanks[]="                                                                       ";
 
 void SayUsage (char *programname) {
     printf("RS232log: M-NET sniffer\n");
@@ -198,9 +204,9 @@ void newline (void) {
     crc = 0;
 }
 
-void showtime(void) {
+void showtime(unsigned long delta) {
     if (did_newline) {
-        unsigned long delta = delta_time();
+        if (COOLMASTER) output("%.*s", 27, blanks);  // indent to separate from CoolMaster output
         output ("%5ld.%03d  ", delta/1000,delta%1000);
         did_newline = false;
     }
@@ -212,6 +218,16 @@ void print_addr (int addr) {
 }
 
 // detailed command decodes
+
+void showtemp (int pos) {
+    output(" %d.%d deg C", packet.data[pos]*10+(packet.data[pos+1]>>4), packet.data[pos+1]&0xf);
+    float degc = packet.data[pos]*10+(packet.data[pos+1]>>4)+(packet.data[pos+1]&0xf)/10;
+    output(", %.1f deg F", degc*9/5+32);
+}
+void showfanspeed (int pos) {
+    int parm = packet.data[pos];
+    output(parm==4?" low":parm==5?" medium":parm==6?" high":parm==0x0b?" auto":"???");
+}
 
 void poweron (void) {
     int parm = packet.data[2];
@@ -238,36 +254,42 @@ void getsetpoint (void) {
     output("get setpoint temp");
 };
 void getsetpoint_ack (void) {
-    output(" %d.%d deg C", packet.data[2]*10+(packet.data[3]>>4), packet.data[3]&0xf);
+    showtemp(2);
 }
 void getfanspeed (void) {
     output("get fan speed");
 }
 void getfanspeed_ack (void) {
-    int parm = packet.data[2];
-    output(parm==4?" low":parm==5?" medium":parm==6?" high":parm==0x0b?" auto":"???");
+    showfanspeed(2);
+}
+void setfanspeed (void) {
+    output("set fan speed");
+    showfanspeed(2);
+}
+void setfanspeed_ack (void) {
+        output(" ok");
 }
 void getcurrenttemp (void) {
     output ("get current temp");
 }
 void getcurrenttemp_ack (void) {
-    output(" %d.%d deg C", packet.data[3]*10+(packet.data[4]>>4), packet.data[4]&0xf);
+    showtemp(3);
 }
 void setmode (void) {
     int parm = packet.data[2];
-    output("set mode %s", parm==7?"heat":parm==8?"cool":"???");
+    output("set mode %s", parm==7?"heat":parm==8?"cool":parm==32?"auto":"???");
 }
 void setmode_ack (void) {
     output(" ok");
 }
 void settemp (void) {
-    output("set temp %d.%d deg C", packet.data[2]*10+(packet.data[3]>>4), packet.data[3]&0xf);
+    output("set temp ");
+    showtemp(2);
 }
 void settemp_ack (void) {
     output(" ok");
 }
 
-static char blanks[]="                                                                  ";
 
 static struct {  //*****  packet format matching table
         #define MAX_CMDSIZE 6 // max bytes we match to decode packet format, starting with data_length
@@ -282,6 +304,8 @@ static struct {  //*****  packet format matching table
         {{M,M,M,M}, {3,0x0d,0x82,0x00}, setmode_ack},
         {{M,M,M},   {5,0x05,0x01},      settemp},
         {{M,M,M,M}, {3,0x05,0x81,0x00}, settemp_ack},
+        {{M,M,M},   {3,0x0d,0x0e},      setfanspeed},
+        {{M,M,M,M}, {3,0x0d,0x8e,0x00}, setfanspeed_ack},
         {{M,M,M},   {2,0x2d,0x01},      getstatus},
         {{M,M,M},   {5,0x2d,0x81},      getstatus_ack},
         {{M,M,M},   {2,0x2d,0x02},      getmode},
@@ -297,7 +321,7 @@ static struct {  //*****  packet format matching table
 
 void decode_packet (void) {
     packet.data_length = min(16,packet.data_length);
-    output("%.*s", 20-3*packet.data_length, blanks); // space out to a fixed column
+    output("%.*s", 18-3*packet.data_length, blanks); // space out to a fixed column
 
     // format the to and from addresses
     if (packet.from_addr == prev_to_addr && packet.to_addr == prev_from_addr) output("  ");
@@ -328,11 +352,18 @@ next:;
 int main(int argc,char *argv[]){
     unsigned char c;
     DWORD bytes_read, bytes_written;
-    char chstr[2]; // one character as a string
+    unsigned long delta=0;
 
-    printf("Mitsubishi M-NET Sniffer\n");
+    #define CM_MAX 80	// CoolMaster character buffer
+    unsigned char cm_buf[CM_MAX+1];
+    int cm_bufcnt=0;
+
+    #define MN_MAX 80	// M-Net character buffer
+    unsigned char mn_buf[MN_MAX+1];
+    int mn_bufcnt=0;
+
+    printf("Mitsubishi M-NET Sniffer, version " VERSION "\n");
     HandleOptions(argc,argv);
-    chstr[1]='\n';
 
 #if MNET
     // Open serial port for sniffing M-NET
@@ -349,9 +380,9 @@ int main(int argc,char *argv[]){
         dcbSerialParams.Parity = EVENPARITY;
         if(SetCommState(handle_mnet, &dcbSerialParams) == 0) exit_msg("Error setting M-NET port parameters");
         // At 9600 baud, 8 bits, even parity, 1 stop, each character take 1.15 msec
-        timeouts.ReadIntervalTimeout = timeout; // msec
-        timeouts.ReadTotalTimeoutConstant = timeout; // msec
-        timeouts.ReadTotalTimeoutMultiplier = timeout; // msec
+        timeouts.ReadIntervalTimeout = MAXDWORD; // poll only; no wait timeout; // msec
+        timeouts.ReadTotalTimeoutConstant = 0; // timeout; // msec
+        timeouts.ReadTotalTimeoutMultiplier = 0; // timeout; // msec
         timeouts.WriteTotalTimeoutConstant = 50;
         timeouts.WriteTotalTimeoutMultiplier = 10;
         if(SetCommTimeouts(handle_mnet, &timeouts) == 0) exit_msg("Error setting M-NET serial port timeouts");
@@ -415,8 +446,18 @@ int main(int argc,char *argv[]){
         }
 
         if (COOLMASTER && coolmaster_active) { // read CoolMaster traffic
-            ReadFile(handle_coolmaster, &chstr[0], 1, &bytes_read, NULL); // read from CoolMaster RS232 com port, no delay
-            if (bytes_read == 1) output("%c",chstr[0]);
+            ReadFile(handle_coolmaster, &c, 1, &bytes_read, NULL); // read from CoolMaster RS232 com port, no delay
+            if (bytes_read == 1) {
+                if (c!=0x0d) { // ignore CR
+                    if (cm_bufcnt < CM_MAX) cm_buf[cm_bufcnt++] = c;
+                    if (c==0x0a) { // ends with CR/LF
+                        cm_buf[cm_bufcnt] = '\0';
+                        if (cm_bufcnt > 2) // ignore null or almost null lines
+                            output("%s",cm_buf);
+                        cm_bufcnt=0;
+                    }
+                }
+            }
         }
 
         if (!MNET) { // read M-NET traffic from a file
@@ -428,38 +469,45 @@ int main(int argc,char *argv[]){
         }
         else ReadFile(handle_mnet, &c, 1, &bytes_read, NULL); // read from M-NET RS232 com port
 
-        crc += c;
         if (bytes_read == 1) {  // another byte came in
+            crc += c;
             if (raw_datacount < MAX_DATA) packet.rawdata[raw_datacount++] = c;
             else if (!skipping_packet) {
-                printf("too much data ");
+                printf("***too much data ");
                 skipping_packet = true;
             }
             if (!skipping_packet && raw_datacount == 4) { // just finished header: do filters
                 if (filter_unit==-1 || ((packet.from_addr == filter_unit) || (packet.to_addr == filter_unit))) {
-                    showtime();  // start displaying this packet
-                    for (int i=0; i<4; ++i) output("%02X ", packet.rawdata[i]);
+                    delta = delta_time(); // will display this packet: remember the time
                 }
                 else filtering_packet = true;
             }
             if (!skipping_packet && raw_datacount >= 5) { // we've read the header and are reading data
-                if (!filtering_packet) output("%02X ", c);
                 if (raw_datacount == 6+packet.data_length) { // this should be checksum
                     if (crc != 0) {
-                        output("bad CRC ");
+                        output("*** bad CRC *** ");
+                        for (int i=0; i<raw_datacount; ++i) output("%02X ", packet.rawdata[i]);
+                        output("\n");
                         skipping_packet = true;
-                    }
-                }
-                if (raw_datacount == 7+packet.data_length) { // this should be ACK
-                    if (c == 0x06) {
-                        if (!filtering_packet) decode_packet();
-                        filtering_packet = false;
-                        raw_datacount = 0;
                         crc = 0;
                     }
-                    else {
-                        output("no ACK");
-                        skipping_packet = true;
+                }
+                if (raw_datacount == 7+packet.data_length) { // this should be ACK or NACK
+                    if (!filtering_packet) {
+                        // print the packet all at once to avoid interspersing with CoolMaster commands
+                            showtime(delta);
+                            for (int i=0; i<raw_datacount; ++i) output("%02X ", packet.rawdata[i]);
+                            decode_packet();
+                        }
+                    filtering_packet = false;
+                    crc = 0;
+                    raw_datacount = 0;
+                    if (c == NAK) output("*** Received NAK\n");
+                    else if (c != ACK) {  // use this byte as the first byte of the next packet
+                        output("Missing ACK or NAK\n");
+                        packet.rawdata[0] = c;
+                        raw_datacount = 1;
+                        crc = c;
                     }
                 }
             }
@@ -467,7 +515,7 @@ int main(int argc,char *argv[]){
         else { //  start a new line and a new packet after a long time delay
             if (!did_newline) {
                 newline();
-                showtime();
+                showtime(delta_time());
                 newline();
                 skipping_packet = false;
             }
