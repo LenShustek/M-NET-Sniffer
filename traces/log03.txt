@@ -1,0 +1,174 @@
+
+stat3
+
+    0.687  BD FB 01 3F 02 2D 02 D7 06               CM->01 get mode
+001 OFF 19C 22C Med  Heat OK 0
+    0.125  BE 01 FB 3F 03 2D 82 07 4E 06              ->CM  heat
+002 OFF 19C 22C High Cool OK 0
+    1.156  BD FB 02 3F 02 2D 02 D6 06               CM->02 get mode
+003 OFF 18C 21C Auto Heat OK 0
+    0.078  BE 02 FB 3F 03 2D 82 08 4C 06              ->CM  cool
+004 OFF 18C 20C Auto Heat OK 0
+OK
+>
+    1.204  BD FB 03 3F 02 2D 02 D5 06               CM->03 get mode
+    0.078  BE 03 FB 3F 03 2D 82 07 4C 06              ->CM  heat
+    1.203  BD FB 04 3F 02 2D 02 D4 06               CM->04 get mode
+    0.062  BE 04 FB 3F 03 2D 82 07 4B 06              ->CM  heat
+    2.485  BD FB 01 3F 02 25 01 E0 06               CM->01 get setpoint temp
+    0.156  BE 01 FB 3F 05 25 81 01 90 00 CB 06        ->CM  19.0 deg C
+    1.125  BD FB 02 3F 02 25 01 DF 06               CM->02 get setpoint temp
+    0.125  BE 02 FB 3F 05 25 81 01 90 00 CA 06        ->CM  19.0 deg C
+    1.156  BD FB 03 3F 02 25 01 DE 06               CM->03 get setpoint temp
+    0.094  BE 03 FB 3F 05 25 81 01 80 00 D9 06        ->CM  18.0 deg C
+>stat3
+
+001 OFF 19C 22C Med  Heat OK 0
+    1.187  BD FB 04 3F 02 25 01 DD 06               CM->04 get setpoint temp
+    0.079  BE 04 FB 3F 05 25 81 01 85 00 D3 06        ->CM  18.5 deg C
+002 OFF 19C 22C High Cool OK 0
+003 OFF 18C 21C Auto Heat OK 0
+004 OFF 18C 20C Auto Heat OK 0
+OK
+>
+    2.484  BD FB 01 3F 02 2D 0E CB 06               CM->01 get fan speed
+    0.141  BE 01 FB 3F 03 2D 8E 05 44 06              ->CM  medium
+    1.140  BD FB 02 3F 02 2D 0E CA 06               CM->02 get fan speed
+    0.110  BE 02 FB 3F 03 2D 8E 06 42 06              ->CM  high
+    1.171  BD FB 03 3F 02 2D 0E C9 06               CM->03 get fan speed
+    0.094  BE 03 FB 3F 03 2D 8E 0B 3C 06              ->CM  auto
+    1.188  BD FB 04 3F 02 2D 0E C8 06               CM->04 get fan speed
+    0.078  BE 04 FB 3F 03 2D 8E 0B 3B 06              ->CM  auto
+    2.469  BD FB 01 3F 03 35 03 22 AB 06            CM->01 get current temp
+    0.171  BE 01 FB 3F 05 35 83 22 02 20 06 06        ->CM  22.0 deg C
+>stat3
+
+001 OFF 19C 22C Med  Heat OK 0
+    1.110  BD FB 02 3F 03 35 03 22 AA 06            CM->02 get current temp
+    0.140  BE 02 FB 3F 05 35 83 22 02 25 00 06        ->CM  22.5 deg C
+002 OFF 19C 22C High Cool OK 0
+003 OFF 18C 21C Auto Heat OK 0
+    1.141  BD FB 03 3F 03 35 03 22 A9 06            CM->03 get current temp
+004 OFF 18C 20C Auto Heat OK 0
+OK
+    0.125  BE 03 FB 3F 05 35 83 22 02 10 14 06        ->CM  21.0 deg C
+>
+    1.156  BD FB 04 3F 03 35 03 22 A8 06            CM->04 get current temp
+    0.094  BE 04 FB 3F 05 35 83 22 02 00 23 06        ->CM  20.0 deg C
+>stat3
+)˜˜1 OFF 19C 22C Med  Heat OK 0
+002 OFF 19C 22C High Cool OK 0
+003 OFF 18C 21C Auto Heat OK 0
+004 OFF 18C 20C Auto Heat OK 0
+OK
+>
+>stat3
+)˜˜1 OFF 19C 22C Med  Heat OK 0
+002 OFF 19C 22C High Cool OK 0
+003 OFF 18C 21C Auto Heat OK 0
+004 OFF 18C 20C Auto Heat OK 0
+OK
+>
+   21.688  BD FB 01 3F 02 2D 01 D8 06               CM->01 get status
+    0.078  BE 01 FB 3F 05 2D 81 00 00 00 54 06        ->CM  stopped
+    1.187  BD FB 02 3F 02 2D 01 D7 06               CM->02 get status
+    0.156  BE 02 FB 3F 05 2D 81 00 00 00 53 06        ->CM  stopped
+    1.125  BD FB 03 3F 02 2D 01 D6 06               CM->03 get status
+    0.157  BE 03 FB 3F 05 2D 81 00 00 00 52 06        ->CM  stopped
+    1.125  BD FB 04 3F 02 2D 01 D5 06               CM->04 get status
+    0.109  BE 04 FB 3F 05 2D 81 00 00 00 51 06        ->CM  stopped
+>stat3
+
+001 OFF 19C 22C Med  Heat OK 0
+002 OFF 19C 22C High Cool OK 0
+    2.453  BD FB 01 3F 02 2D 02 D7 06               CM->01 get mode
+    0.078  BE 01 FB 3F 03 2D 82 07 4E 06              ->CM  heat
+003 OFF 18C 21C Auto Heat OK 0
+004 OFF 18C 20C Auto Heat OK 0
+OK
+>
+    1.203  BD FB 02 3F 02 2D 02 D6 06               CM->02 get mode
+    0.141  BE 02 FB 3F 03 2D 82 08 4C 06              ->CM  cool
+    1.141  BD FB 03 3F 02 2D 02 D5 06               CM->03 get mode
+    0.140  BE 03 FB 3F 03 2D 82 07 4C 06              ->CM  heat
+    1.141  BD FB 04 3F 02 2D 02 D4 06               CM->04 get mode
+    0.094  BE 04 FB 3F 03 2D 82 07 4B 06              ->CM  heat
+    2.468  BD FB 01 3F 02 25 01 E0 06               CM->01 get setpoint temp
+    0.094  BE 01 FB 3F 05 25 81 01 90 00 CB 06        ->CM  19.0 deg C
+    1.172  BD FB 02 3F 02 25 01 DF 06               CM->02 get setpoint temp
+    0.078  BE 02 FB 3F 05 25 81 01 90 00 CA 06        ->CM  19.0 deg C
+>stat3
+
+    1.203  BD FB 03 3F 02 25 01 DE 06               CM->03 get setpoint temp
+001 OFF 19C 22C Med  Heat OK 0
+    0.078  BE 03 FB 3F 05 25 81 01 80 00 D9 06        ->CM  18.0 deg C
+002 OFF 19C 22C High Cool OK 0
+003 OFF 18C 21C Auto Heat OK 0
+    1.204  BD FB 04 3F 02 25 01 DD 06               CM->04 get setpoint temp
+    0.125  BE 04 FB 3F 05 25 81 01 85 00 D3 06        ->CM  18.5 deg C
+004 OFF 18C 20C Auto Heat OK 0
+OK
+>
+    2.437  BD FB 01 3F 02 2D 0E CB 06               CM->01 get fan speed
+    0.094  BE 01 FB 3F 03 2D 8E 05 44 06              ->CM  medium
+    1.187  BD FB 02 3F 02 2D 0E CA 06               CM->02 get fan speed
+    0.063  BE 02 FB 3F 03 2D 8E 06 42 06              ->CM  high
+    1.219  BD FB 03 3F 02 2D 0E C9 06               CM->03 get fan speed
+    0.062  BE 03 FB 3F 03 2D 8E 0B 3C 06              ->CM  auto
+    1.219  BD FB 04 3F 02 2D 0E C8 06               CM->04 get fan speed
+    0.109  BE 04 FB 3F 03 2D 8E 0B 3B 06              ->CM  auto
+>stat3
+
+001 OFF 19C 22C Med  Heat OK 0
+    2.453  BD FB 01 3F 03 35 03 22 AB 06            CM->01 get current temp
+    0.125  BE 01 FB 3F 05 35 83 22 02 20 06 06        ->CM  22.0 deg C
+002 OFF 19C 22C High Cool OK 0
+003 OFF 18C 21C Auto Heat OK 0
+    1.157  BD FB 02 3F 03 35 03 22 AA 06            CM->02 get current temp
+004 OFF 18C 20C Auto Heat OK 0
+    0.078  BE 02 FB 3F 05 35 83 22 02 25 00 06        ->CM  22.5 deg C
+OK
+>
+    1.187  BD FB 03 3F 03 35 03 22 A9 06            CM->03 get current temp
+    0.110  BE 03 FB 3F 05 35 83 22 02 10 14 06        ->CM  21.0 deg C
+    1.171  BD FB 04 3F 03 35 03 22 A8 06            CM->04 get current temp
+    0.141  BE 04 FB 3F 05 35 83 22 02 00 23 06        ->CM  20.0 deg C
+>stat3
+
+001 OFF 19C 22C Med  Heat OK 0
+002 OFF 19C 22C High Cool OK 0
+003 OFF 18C 21C Auto Heat OK 0
+004 OFF 18C 20C Auto Heat OK 0
+OK
+>
+>stat3
+
+001 OFF 19C 22C Med  Heat OK 0
+002 OFF 19C 22C High Cool OK 0
+003 OFF 18C 21C Auto Heat OK 0
+004 OFF 18C 20C Auto Heat OK 0
+OK
+>
+   21.625  BD FB 01 3F 02 2D 01 D8 06               CM->01 get status
+    0.156  BE 01 FB 3F 05 2D 81 00 00 00 54 06        ->CM  stopped
+    1.125  BD FB 02 3F 02 2D 01 D7 06               CM->02 get status
+    0.125  BE 02 FB 3F 05 2D 81 00 00 00 53 06        ->CM  stopped
+    1.157  BD FB 03 3F 02 2D 01 D6 06               CM->03 get status
+    0.125  BE 03 FB 3F 05 2D 81 00 00 00 52 06        ->CM  stopped
+>stat3
+    1.140  BD FB 04 3F 02 2D 01 D5 06               CM->04 get status
+)˜˜1 OFF 19C 22C Med  Heat OK 0
+    0.172  BE 04 FB 3F 05 2D 81 00 00 00 51 06        ->CM  stopped
+002 OFF 19C 22C High Cool OK 0
+003 OFF 18C 21C Auto Heat OK 0
+004 OFF 18C 20C Auto Heat OK 0
+OK
+>
+    2.391  BD FB 01 3F 02 2D 02 D7 06               CM->01 get mode
+    0.156  BE 01 FB 3F 03 2D 82 07 4E 06              ->CM  heat
+    1.125  BD FB 02 3F 02 2D 02 D6 06               CM->02 get mode
+    0.125  BE 02 FB 3F 03 2D 82 08 4C 06              ->CM  cool
+    1.156  BD FB 03 3F 02 2D 02 D5 06               CM->03 get mode
+    0.125  BE 03 FB 3F 03 2D 82 07 4C 06              ->CM  heat
+    1.156  BD FB 04 3F 02 2D 02 D4 06               CM->04 get mode
+    0.157  BE 04 FB 3F 03 2D 82 07 4B 06              ->CM  heat
